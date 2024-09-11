@@ -14,10 +14,10 @@
 		"lint:fix": "npm run lint -- --fix && npm run format"
 	},
 	"dependencies": {
-		"@astrojs/check": "^0.5.10",
-		"@astrojs/sitemap": "^3.1.4",
-		"astro": "^4.7.0",
-		"microcms-js-sdk": "^3.1.1",
+		"@astrojs/check": "^0.9.3",
+		"@astrojs/sitemap": "^3.1.6",
+		"@master/css": "^1.37.8",
+		"astro": "^4.15.4",
 		"sass": "^1.76.0",
 		"typescript": "^5.4.5"
 	},

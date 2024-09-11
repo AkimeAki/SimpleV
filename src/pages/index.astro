@@ -1,36 +1,40 @@
 ---
 import Button from "@/components/atoms/Button.astro";
+import Title from "@/components/atoms/Title.astro";
 import Base from "@/layouts/Base.astro";
 ---
 
 <Base>
-	<main>
-		<div class="detail-area">
-			<div>
-				<p>はじめにこちらのボタンを押して、音声入力の許可をしてください。</p>
+	<main class="padding:20px;">
+		<div class="display:flex; flex-direction:column; align-items:flex-start; gap:50px;">
+			<div class="display:flex; flex-direction:column; gap:10px; align-items:flex-start;">
+				<Title>はじめにこちらのボタンを押して、音声入力の許可をしてください。</Title>
 				<Button id="input-voice-button">音声を入力の許可をする</Button>
 			</div>
-			<div>
-				<p>使用する画像を選択</p>
+			<div class="display:flex; flex-direction:column; gap:10px; align-items:flex-start;">
+				<Title>使用する画像を選択</Title>
 				<p>同じサイズの画像を選択することをおすすめします。</p>
 				<div>
 					<input id="select-silent-image-input" type="file" accept=".jpg,.jpeg,.png,.gif" />
 					<input id="select-sound-image-input" type="file" accept=".jpg,.jpeg,.png,.gif" />
-					<Button id="select-silent-image" disabled>音声入力が無い場合に表示する画像を選択</Button>
-					<Button id="select-sound-image" disabled>音声入力中に表示する画像を選択</Button>
+					<div class="display:flex; flex-wrap:wrap; gap:10px;">
+						<Button id="select-silent-image" disabled>音声入力が無い場合に表示する画像を選択</Button>
+						<Button id="select-sound-image" disabled>音声入力中に表示する画像を選択</Button>
+					</div>
 				</div>
 			</div>
-			<div>
-				<p>入力音量を調整</p>
+			<div class="display:flex; flex-direction:column; gap:10px; align-items:flex-start;">
+				<Title>入力音量を調整</Title>
 				<div>
 					<input id="input-voice-gain" type="number" min="0" value="1.00" step="0.01" />
 					<span>倍</span>
 				</div>
 			</div>
-			<div>
-				<p>表示タイミングを調節</p>
+			<div class="display:flex; flex-direction:column; gap:10px; align-items:flex-start;">
+				<Title>表示タイミングを調節</Title>
+				<p>青いバーをつまんで調節できます。音量が青いバーを超えると喋ってる判定になります。</p>
 				<div>
-					<div id="gain-controller-wrap">
+					<div class="position:relative; width:300px; height:40px;">
 						<div id="gain-controller-shadow"></div>
 						<div id="gain-controller"></div>
 						<div id="gain-wrap">
@@ -39,14 +43,14 @@ import Base from "@/layouts/Base.astro";
 					</div>
 				</div>
 			</div>
-			<div>
-				<p>準備が完了したら、SimpleVTuberを起動してください。</p>
+			<div class="display:flex; flex-direction:column; gap:10px; align-items:flex-start;">
+				<Title>準備が完了したら、SimpleVを起動してください。</Title>
 				<p>
-					SimpleVTuberを起動するとUIがすべてなくなります。右クリックから「設定画面に戻る」を押すと今の画面に戻れます。
+					SimpleVを起動するとUIがすべてなくなります。右クリックから「設定画面に戻る」を押すと今の画面に戻れます。
 				</p>
-				<Button id="go-view-button" href="/view" disabled>SimpleVTuberを起動</Button>
+				<Button id="go-view-button" href="/view" disabled>SimpleVを起動</Button>
 			</div>
-			<div id="install-app-area">
+			<div id="install-app-area" class="display:flex; flex-direction:column; gap:10px; align-items:flex-start;">
 				<p>アプリ化することでOBSなどで取り込んだ際に便利です。</p>
 				<Button id="install-button">アプリ化する</Button>
 			</div>
@@ -55,91 +59,75 @@ import Base from "@/layouts/Base.astro";
 </Base>
 
 <style lang="scss">
-	main {
-		padding: 20px;
-	}
-
-	.detail-area {
-		display: flex;
-		flex-direction: column;
-		align-items: flex-start;
-		gap: 30px;
-	}
-
 	#input-voice-gain {
 		text-align: right;
 	}
 
-	#gain-controller-wrap {
-		position: relative;
-		width: 300px;
-		height: 40px;
+	#gain-wrap {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 100%;
+		height: 10px;
+		overflow: hidden;
+		border-radius: 5px;
 
-		#gain-wrap {
-			position: absolute;
-			top: 50%;
-			left: 50%;
-			transform: translate(-50%, -50%);
-			width: 100%;
-			height: 10px;
-			overflow: hidden;
-			border-radius: 5px;
-
-			#gain {
-				position: absolute;
-				top: 0;
-				left: 0;
-				height: 100%;
-				background-color: #6cb357;
-			}
-
-			&:before {
-				content: "";
-				display: block;
-				position: absolute;
-				top: 0;
-				left: 0;
-				width: 100%;
-				height: 100%;
-				background-color: #485b42;
-			}
-		}
-
-		#gain-controller,
-		#gain-controller-shadow {
+		#gain {
 			position: absolute;
 			top: 0;
-			left: 220px;
-			width: 7px;
+			left: 0;
 			height: 100%;
+			background-color: #6cb357;
 		}
 
-		#gain-controller {
-			width: 15px;
+		&:before {
+			content: "";
+			display: block;
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
 			height: 100%;
-			cursor: col-resize;
-			z-index: 2;
-
-			&:after {
-				display: block;
-				content: "";
-				position: absolute;
-				top: 50%;
-				left: 0;
-				transform: translateY(-50%);
-				width: 5px;
-				height: 100%;
-				background-color: #5d57b3;
-				border: 2px solid white;
-				border-radius: 5px;
-			}
+			background-color: #485b42;
 		}
+	}
 
-		#gain-controller-shadow {
-			opacity: 0;
-			user-select: none;
-			pointer-events: none;
+	#gain-controller,
+	#gain-controller-shadow {
+		position: absolute;
+		top: 0;
+		left: 220px;
+		width: 7px;
+		height: 100%;
+	}
+
+	#gain-controller {
+		width: 15px;
+		height: 100%;
+		cursor: col-resize;
+		z-index: 2;
+		touch-action: none;
+
+		&:after {
+			display: block;
+			content: "";
+			position: absolute;
+			top: 50%;
+			left: 0;
+			transform: translateY(-50%);
+			width: 5px;
+			height: 100%;
+			background-color: #5d57b3;
+			border: 2px solid white;
+			border-radius: 5px;
 		}
+	}
+
+	#gain-controller-shadow {
+		opacity: 0;
+		user-select: none;
+		pointer-events: none;
 	}
 
 	#select-silent-image-input,
@@ -238,9 +226,10 @@ import Base from "@/layouts/Base.astro";
 	window.threshold = 220;
 
 	if (controller !== null && controllerShadow !== null) {
-		controller.addEventListener("pointermove", (e) => {
+		const move = (e: PointerEvent) => {
 			if (e.buttons === 1) {
 				let position = controllerShadow.offsetLeft + e.movementX;
+
 				controllerShadow.style.left = position + "px";
 
 				if (position >= 299) {
@@ -256,9 +245,11 @@ import Base from "@/layouts/Base.astro";
 				controller.draggable = false;
 				controller.setPointerCapture(e.pointerId);
 			}
-		});
+		};
 
-		controller.addEventListener("mouseup", () => {
+		controller.addEventListener("pointermove", move);
+
+		controller.addEventListener("pointerup", () => {
 			controllerShadow.style.left = controller.style.left;
 		});
 	}

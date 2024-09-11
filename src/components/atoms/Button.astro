@@ -32,8 +32,10 @@ const { id, href, disabled = false } = Astro.props;
 		text-decoration: none;
 		user-select: none;
 
-		&:hover {
-			background-color: #80675d;
+		@media (hover: hover) {
+			&:hover {
+				background-color: #80675d;
+			}
 		}
 
 		&[data-disabled] {

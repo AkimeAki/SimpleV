@@ -1,7 +1,7 @@
 {
 	"folders": [
 		{
-			"name": "どっとや",
+			"name": "SimpleV",
 			"path": "."
 		}
 	],
@@ -23,7 +23,8 @@
 			"astro-build.astro-vscode",
 			"dbaeumer.vscode-eslint",
 			"esbenp.prettier-vscode",
-			"EditorConfig.EditorConfig"
+			"EditorConfig.EditorConfig",
+			"masterco.master-css-language-service"
 		]
 	}
 }
