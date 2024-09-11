@@ -1,0 +1,108 @@
+---
+import ContextMenuItem from "@/components/atoms/ContextMenuItem.astro";
+import ContextMenu from "@/components/molecules/ContextMenu.astro";
+import Base from "@/layouts/Base.astro";
+
+const bgColor = "#00ff00";
+---
+
+<Base notFound>
+	<ContextMenu>
+		<ContextMenuItem href="/">設定画面に戻る</ContextMenuItem>
+		<ContextMenuItem>
+			背景色選択 <input id="select-bg-color" type="color" value={bgColor} />
+		</ContextMenuItem>
+		<ContextMenuItem>
+			ドット絵モード <input type="checkbox" id="dot-mode" />
+		</ContextMenuItem>
+	</ContextMenu>
+
+	<div id="view-area"></div>
+
+	<script>
+		const getData = () => {
+			if (window.silentImageArrayBuffer !== undefined && window.soundImageArrayBuffer !== undefined) {
+				const soundImageBlob = new Blob([window.silentImageArrayBuffer]);
+				const silentImageBlob = new Blob([window.soundImageArrayBuffer]);
+
+				const viewArea = document.querySelector<HTMLDivElement>("#view-area");
+				if (viewArea !== null) {
+					const url = window.URL;
+					viewArea.innerHTML = /* html */ `
+					<img id="sound-image" src="${url.createObjectURL(soundImageBlob)}" />
+					<img id="silent-image" src="${url.createObjectURL(silentImageBlob)}" />
+				`;
+				}
+			}
+		};
+		document.addEventListener("astro:page-load", getData);
+	</script>
+
+	<script>
+		const changeColor = () => {
+			const colorInput = document.querySelector<HTMLInputElement>("#select-bg-color");
+			const viewArea = document.querySelector<HTMLDivElement>("#view-area");
+
+			if (colorInput !== null && viewArea !== null) {
+				colorInput.addEventListener("input", () => {
+					viewArea.style.backgroundColor = colorInput.value;
+				});
+			}
+		};
+
+		document.addEventListener("astro:page-load", changeColor);
+	</script>
+
+	<script>
+		const changeDotMode = () => {
+			console.log("aaaa");
+			const dotMode = document.querySelector<HTMLInputElement>("#dot-mode");
+
+			if (dotMode !== null) {
+				dotMode.addEventListener("input", () => {
+					const soundImage = document.querySelector<HTMLImageElement>("#sound-image");
+					const silentImage = document.querySelector<HTMLImageElement>("#silent-image");
+
+					if (soundImage !== null && silentImage !== null) {
+						if (dotMode.checked) {
+							soundImage.style.imageRendering = "pixelated";
+							silentImage.style.imageRendering = "pixelated";
+						} else {
+							soundImage.style.imageRendering = "crisp-edges";
+							silentImage.style.imageRendering = "crisp-edges";
+						}
+					}
+				});
+			}
+		};
+
+		document.addEventListener("astro:page-load", changeDotMode);
+	</script>
+</Base>
+
+<style define:vars={{ bgColor }}>
+	#view-area {
+		position: relative;
+		width: 100%;
+		height: 100%;
+		background-color: var(--bgColor);
+	}
+
+	:global(#sound-image),
+	:global(#silent-image) {
+		display: none;
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+		image-rendering: crisp-edges;
+	}
+</style>
+
+<script>
+	if (window.isReady === undefined) {
+		location.href = "/";
+	}
+</script>

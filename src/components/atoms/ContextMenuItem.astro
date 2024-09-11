@@ -1,0 +1,35 @@
+---
+interface Props {
+	href?: string;
+}
+
+const { href } = Astro.props;
+---
+
+{
+	href === undefined ? (
+		<button class="menu-item">
+			<slot />
+		</button>
+	) : (
+		<a class="menu-item" href={href}>
+			<slot />
+		</a>
+	)
+}
+
+<style lang="scss">
+	.menu-item {
+		background-color: #5b4942;
+		color: white;
+		padding: 10px 20px;
+		cursor: pointer;
+		white-space: nowrap;
+		text-decoration: none;
+		user-select: none;
+
+		&:hover {
+			background-color: #80675d;
+		}
+	}
+</style>

@@ -1,0 +1,22 @@
+{
+	"name": "SimpleV",
+	"short_name": "SimpleV",
+	"theme_color": "#5b4942",
+	"background_color": "#f3eee6",
+	"display": "standalone",
+	"scope": "/",
+	"start_url": "/",
+	"description": "配信用のシンプルな立ち絵を表示アプリ",
+	"icons": [
+		{
+			"src": "/icon192.png",
+			"sizes": "192x192",
+			"type": "image/png"
+		},
+		{
+			"src": "/icon512.png",
+			"sizes": "512x512",
+			"type": "image/png"
+		}
+	]
+}

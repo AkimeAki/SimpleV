@@ -1,0 +1,384 @@
+---
+import Button from "@/components/atoms/Button.astro";
+import Base from "@/layouts/Base.astro";
+---
+
+<Base>
+	<main>
+		<div class="detail-area">
+			<div>
+				<p>はじめにこちらのボタンを押して、音声入力の許可をしてください。</p>
+				<Button id="input-voice-button">音声を入力の許可をする</Button>
+			</div>
+			<div>
+				<p>使用する画像を選択</p>
+				<p>同じサイズの画像を選択することをおすすめします。</p>
+				<div>
+					<input id="select-silent-image-input" type="file" accept=".jpg,.jpeg,.png,.gif" />
+					<input id="select-sound-image-input" type="file" accept=".jpg,.jpeg,.png,.gif" />
+					<Button id="select-silent-image" disabled>音声入力が無い場合に表示する画像を選択</Button>
+					<Button id="select-sound-image" disabled>音声入力中に表示する画像を選択</Button>
+				</div>
+			</div>
+			<div>
+				<p>入力音量を調整</p>
+				<div>
+					<input id="input-voice-gain" type="number" min="0" value="1.00" step="0.01" />
+					<span>倍</span>
+				</div>
+			</div>
+			<div>
+				<p>表示タイミングを調節</p>
+				<div>
+					<div id="gain-controller-wrap">
+						<div id="gain-controller-shadow"></div>
+						<div id="gain-controller"></div>
+						<div id="gain-wrap">
+							<div id="gain"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div>
+				<p>準備が完了したら、SimpleVTuberを起動してください。</p>
+				<p>
+					SimpleVTuberを起動するとUIがすべてなくなります。右クリックから「設定画面に戻る」を押すと今の画面に戻れます。
+				</p>
+				<Button id="go-view-button" href="/view" disabled>SimpleVTuberを起動</Button>
+			</div>
+			<div>
+				<p>アプリ化することでOBSなどで取り込んだ際に便利です。</p>
+				<Button id="install-button" disabled>アプリ化する</Button>
+			</div>
+		</div>
+	</main>
+</Base>
+
+<style lang="scss">
+	main {
+		padding: 20px;
+	}
+
+	.detail-area {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 30px;
+	}
+
+	#input-voice-gain {
+		text-align: right;
+	}
+
+	#gain-controller-wrap {
+		position: relative;
+		width: 300px;
+		height: 40px;
+
+		#gain-wrap {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			width: 100%;
+			height: 10px;
+			overflow: hidden;
+			border-radius: 5px;
+
+			#gain {
+				position: absolute;
+				top: 0;
+				left: 0;
+				height: 100%;
+				background-color: #6cb357;
+			}
+
+			&:before {
+				content: "";
+				display: block;
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background-color: #485b42;
+			}
+		}
+
+		#gain-controller,
+		#gain-controller-shadow {
+			position: absolute;
+			top: 0;
+			left: 220px;
+			width: 7px;
+			height: 100%;
+		}
+
+		#gain-controller {
+			width: 15px;
+			height: 100%;
+			cursor: col-resize;
+			z-index: 2;
+
+			&:after {
+				display: block;
+				content: "";
+				position: absolute;
+				top: 50%;
+				left: 0;
+				transform: translateY(-50%);
+				width: 5px;
+				height: 100%;
+				background-color: #5d57b3;
+				border: 2px solid white;
+				border-radius: 5px;
+			}
+		}
+
+		#gain-controller-shadow {
+			opacity: 0;
+			user-select: none;
+			pointer-events: none;
+		}
+	}
+
+	#select-silent-image-input,
+	#select-sound-image-input {
+		display: none;
+	}
+</style>
+
+<script>
+	const goViewButton = document.querySelector("#go-view-button");
+	if (goViewButton !== null) {
+		goViewButton.addEventListener("click", () => {
+			window.isReady = true;
+		});
+	}
+</script>
+
+<script>
+	window.magnification = 1.0;
+
+	const inputVoiceGain = document.querySelector<HTMLInputElement>("#input-voice-gain");
+	if (inputVoiceGain !== null) {
+		inputVoiceGain.addEventListener("change", () => {
+			window.magnification = Number(inputVoiceGain.value);
+		});
+	}
+</script>
+
+<script>
+	const selectSilentImage = document.querySelector<HTMLButtonElement>("#select-silent-image");
+	const selectSoundImage = document.querySelector<HTMLButtonElement>("#select-sound-image");
+	const selectSilentImageInput = document.querySelector<HTMLInputElement>("#select-silent-image-input");
+	const selectSoundImageInput = document.querySelector<HTMLInputElement>("#select-sound-image-input");
+	const goViewButton = document.querySelector<HTMLButtonElement>("#go-view-button");
+
+	if (
+		selectSilentImage !== null &&
+		selectSoundImage !== null &&
+		selectSilentImageInput !== null &&
+		selectSoundImageInput !== null &&
+		goViewButton !== null
+	) {
+		selectSilentImage.addEventListener("click", () => {
+			if (selectSilentImage.dataset.disabled === undefined) {
+				selectSilentImageInput.click();
+			}
+		});
+
+		selectSilentImageInput.addEventListener("change", async () => {
+			const files = selectSilentImageInput.files;
+			if (files !== null) {
+				const file = files[0];
+				if (file !== undefined) {
+					const arrayBuffer = await file.arrayBuffer();
+					window.silentImageArrayBuffer = arrayBuffer;
+
+					if (window.silentImageArrayBuffer !== undefined && window.soundImageArrayBuffer !== undefined) {
+						goViewButton.removeAttribute("data-disabled");
+					}
+				}
+			}
+		});
+
+		selectSoundImage.addEventListener("click", () => {
+			if (selectSoundImage.dataset.disabled === undefined) {
+				selectSoundImageInput.click();
+			}
+		});
+
+		selectSoundImageInput.addEventListener("change", async () => {
+			const files = selectSoundImageInput.files;
+
+			if (files !== null) {
+				const file = files[0];
+				if (file !== undefined) {
+					const arrayBuffer = await file.arrayBuffer();
+					window.soundImageArrayBuffer = arrayBuffer;
+
+					if (window.silentImageArrayBuffer !== undefined && window.soundImageArrayBuffer !== undefined) {
+						goViewButton.removeAttribute("data-disabled");
+					}
+				}
+			}
+		});
+	}
+</script>
+
+<script>
+	const controller = document.querySelector<HTMLDivElement>("#gain-controller");
+	const controllerShadow = document.querySelector<HTMLDivElement>("#gain-controller-shadow");
+
+	window.threshold = 220;
+
+	if (controller !== null && controllerShadow !== null) {
+		controller.addEventListener("pointermove", (e) => {
+			if (e.buttons === 1) {
+				let position = controllerShadow.offsetLeft + e.movementX;
+				controllerShadow.style.left = position + "px";
+
+				if (position >= 299) {
+					position = 300;
+				}
+
+				if (position <= 0) {
+					position = 0;
+				}
+
+				controller.style.left = position + "px";
+				window.threshold = position;
+				controller.draggable = false;
+				controller.setPointerCapture(e.pointerId);
+			}
+		});
+
+		controller.addEventListener("mouseup", () => {
+			controllerShadow.style.left = controller.style.left;
+		});
+	}
+</script>
+
+<script>
+	const gainElement = document.querySelector<HTMLDivElement>("#gain");
+	const inputVoiceGain = document.querySelector<HTMLInputElement>("#input-voice-gain");
+
+	const button = document.querySelector<HTMLButtonElement>("#input-voice-button");
+	if (gainElement !== null && inputVoiceGain !== null && button !== null) {
+		button.addEventListener("click", async () => {
+			try {
+				const audioCtx = new AudioContext();
+
+				// マイクから音声を取得する
+				const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+				const source = audioCtx.createMediaStreamSource(stream);
+
+				const analyser = audioCtx.createAnalyser();
+				analyser.fftSize = 256;
+				source.connect(analyser);
+
+				const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+				// ゲインの表示関数
+				const getDb = () => {
+					// 周波数データを取得
+					analyser.getByteFrequencyData(dataArray);
+
+					const maxLevel = Math.max(...dataArray);
+					const db = (maxLevel / 255) * 100;
+
+					const gain = db * Number(inputVoiceGain.value);
+
+					gainElement.style.backgroundColor = "";
+
+					if (gain >= 100) {
+						gainElement.style.backgroundColor = "#b35757";
+					}
+
+					gainElement.style.width = `${gain}%`;
+
+					const soundImage = document.querySelector<HTMLImageElement>("#sound-image");
+					const silentImage = document.querySelector<HTMLImageElement>("#silent-image");
+
+					if (
+						soundImage !== null &&
+						silentImage !== null &&
+						window.threshold !== undefined &&
+						window.magnification !== undefined
+					) {
+						if ((window.threshold / 300) * 100 < gain) {
+							soundImage.style.display = "none";
+							silentImage.style.display = "block";
+						} else {
+							soundImage.style.display = "block";
+							silentImage.style.display = "none";
+						}
+					}
+
+					// 繰り返し実行
+					requestAnimationFrame(getDb);
+				};
+
+				// ゲイン表示を開始
+				getDb();
+
+				const selectSilentImage = document.querySelector<HTMLButtonElement>("#select-silent-image");
+				const selectSoundImage = document.querySelector<HTMLButtonElement>("#select-sound-image");
+				if (selectSilentImage !== null && selectSoundImage !== null) {
+					selectSilentImage.removeAttribute("data-disabled");
+					selectSoundImage.removeAttribute("data-disabled");
+				}
+			} catch (e) {
+				/* empty */
+			}
+		});
+	}
+</script>
+
+<script>
+	const button = document.querySelector<HTMLButtonElement>("#install-button");
+
+	const eventCustom = (event: Event) => {
+		event.preventDefault();
+
+		if (button !== null) {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-expect-error
+			button.promptEvent = event;
+			button.removeAttribute("data-disabled");
+		}
+	};
+
+	const click = () => {
+		if (
+			button !== null &&
+			button.dataset.disabled === undefined &&
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-expect-error
+			button.promptEvent !== null &&
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-expect-error
+			button.promptEvent !== undefined
+		) {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-expect-error
+			button.promptEvent.prompt();
+
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-expect-error
+			button.promptEvent.userChoice.then(() => {
+				button.dataset.disabled = "";
+
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-expect-error
+				button.promptEvent = null;
+			});
+		}
+	};
+
+	window.addEventListener("beforeinstallprompt", eventCustom);
+	if (button !== null) {
+		button.addEventListener("click", click);
+	}
+</script>
