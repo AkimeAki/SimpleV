@@ -112,10 +112,7 @@ const schema = [
 
 			toggleOnContextMenu();
 
-			document.addEventListener("astro:after-swap", toggleOnContextMenu, false);
-		</script>
-		<script>
-			import "@master/css";
+			document.addEventListener("astro:after-swap", toggleOnContextMenu);
 		</script>
 	</body>
 </html>

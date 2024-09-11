@@ -5,36 +5,36 @@ import Base from "@/layouts/Base.astro";
 ---
 
 <Base>
-	<main class="padding:20px;">
-		<div class="display:flex; flex-direction:column; align-items:flex-start; gap:50px;">
-			<div class="display:flex; flex-direction:column; gap:10px; align-items:flex-start;">
+	<main>
+		<div class="main-content">
+			<div class="content-box">
 				<Title>はじめにこちらのボタンを押して、音声入力の許可をしてください。</Title>
 				<Button id="input-voice-button">音声を入力の許可をする</Button>
 			</div>
-			<div class="display:flex; flex-direction:column; gap:10px; align-items:flex-start;">
+			<div class="content-box">
 				<Title>使用する画像を選択</Title>
 				<p>同じサイズの画像を選択することをおすすめします。</p>
 				<div>
 					<input id="select-silent-image-input" type="file" accept=".jpg,.jpeg,.png,.gif" />
 					<input id="select-sound-image-input" type="file" accept=".jpg,.jpeg,.png,.gif" />
-					<div class="display:flex; flex-wrap:wrap; gap:10px;">
+					<div class="button-box">
 						<Button id="select-silent-image" disabled>音声入力が無い場合に表示する画像を選択</Button>
 						<Button id="select-sound-image" disabled>音声入力中に表示する画像を選択</Button>
 					</div>
 				</div>
 			</div>
-			<div class="display:flex; flex-direction:column; gap:10px; align-items:flex-start;">
+			<div class="content-box">
 				<Title>入力音量を調整</Title>
 				<div>
 					<input id="input-voice-gain" type="number" min="0" value="1.00" step="0.01" />
 					<span>倍</span>
 				</div>
 			</div>
-			<div class="display:flex; flex-direction:column; gap:10px; align-items:flex-start;">
+			<div class="content-box">
 				<Title>表示タイミングを調節</Title>
 				<p>青いバーをつまんで調節できます。音量が青いバーを超えると喋ってる判定になります。</p>
 				<div>
-					<div class="position:relative; width:300px; height:40px;">
+					<div id="gain-controller-wrap">
 						<div id="gain-controller-shadow"></div>
 						<div id="gain-controller"></div>
 						<div id="gain-wrap">
@@ -43,14 +43,20 @@ import Base from "@/layouts/Base.astro";
 					</div>
 				</div>
 			</div>
-			<div class="display:flex; flex-direction:column; gap:10px; align-items:flex-start;">
+			<div class="content-box">
 				<Title>準備が完了したら、SimpleVを起動してください。</Title>
 				<p>
 					SimpleVを起動するとUIがすべてなくなります。右クリックから「設定画面に戻る」を押すと今の画面に戻れます。
 				</p>
 				<Button id="go-view-button" href="/view" disabled>SimpleVを起動</Button>
 			</div>
-			<div id="install-app-area" class="display:flex; flex-direction:column; gap:10px; align-items:flex-start;">
+			<div class="content-box">
+				<div class="button-box">
+					<Button id="load-button" disabled>保存した設定を読み込む</Button>
+					<Button id="save-button" disabled>設定を保存</Button>
+				</div>
+			</div>
+			<div id="install-app-area" class="content-box">
 				<p>アプリ化することでOBSなどで取り込んだ際に便利です。</p>
 				<Button id="install-button">アプリ化する</Button>
 			</div>
@@ -59,8 +65,38 @@ import Base from "@/layouts/Base.astro";
 </Base>
 
 <style lang="scss">
+	main {
+		padding: 20px;
+	}
+
+	.main-content {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 50px;
+	}
+
+	.button-box {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+	}
+
+	.content-box {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		align-items: flex-start;
+	}
+
 	#input-voice-gain {
 		text-align: right;
+	}
+
+	#gain-controller-wrap {
+		position: relative;
+		width: 300px;
+		height: 40px;
 	}
 
 	#gain-wrap {
@@ -150,232 +186,346 @@ import Base from "@/layouts/Base.astro";
 </script>
 
 <script>
-	window.magnification = 1.0;
+	const magnificationControl = () => {
+		window.magnification = 1.0;
 
-	const inputVoiceGain = document.querySelector<HTMLInputElement>("#input-voice-gain");
-	if (inputVoiceGain !== null) {
-		inputVoiceGain.addEventListener("change", () => {
-			window.magnification = Number(inputVoiceGain.value);
-		});
-	}
-</script>
-
-<script>
-	const selectSilentImage = document.querySelector<HTMLButtonElement>("#select-silent-image");
-	const selectSoundImage = document.querySelector<HTMLButtonElement>("#select-sound-image");
-	const selectSilentImageInput = document.querySelector<HTMLInputElement>("#select-silent-image-input");
-	const selectSoundImageInput = document.querySelector<HTMLInputElement>("#select-sound-image-input");
-	const goViewButton = document.querySelector<HTMLButtonElement>("#go-view-button");
-
-	if (
-		selectSilentImage !== null &&
-		selectSoundImage !== null &&
-		selectSilentImageInput !== null &&
-		selectSoundImageInput !== null &&
-		goViewButton !== null
-	) {
-		selectSilentImage.addEventListener("click", () => {
-			if (selectSilentImage.dataset.disabled === undefined) {
-				selectSilentImageInput.click();
-			}
-		});
-
-		selectSilentImageInput.addEventListener("change", async () => {
-			const files = selectSilentImageInput.files;
-			if (files !== null) {
-				const file = files[0];
-				if (file !== undefined) {
-					const arrayBuffer = await file.arrayBuffer();
-					window.silentImageArrayBuffer = arrayBuffer;
-
-					if (window.silentImageArrayBuffer !== undefined && window.soundImageArrayBuffer !== undefined) {
-						goViewButton.removeAttribute("data-disabled");
-					}
-				}
-			}
-		});
-
-		selectSoundImage.addEventListener("click", () => {
-			if (selectSoundImage.dataset.disabled === undefined) {
-				selectSoundImageInput.click();
-			}
-		});
-
-		selectSoundImageInput.addEventListener("change", async () => {
-			const files = selectSoundImageInput.files;
-
-			if (files !== null) {
-				const file = files[0];
-				if (file !== undefined) {
-					const arrayBuffer = await file.arrayBuffer();
-					window.soundImageArrayBuffer = arrayBuffer;
-
-					if (window.silentImageArrayBuffer !== undefined && window.soundImageArrayBuffer !== undefined) {
-						goViewButton.removeAttribute("data-disabled");
-					}
-				}
-			}
-		});
-	}
-</script>
-
-<script>
-	const controller = document.querySelector<HTMLDivElement>("#gain-controller");
-	const controllerShadow = document.querySelector<HTMLDivElement>("#gain-controller-shadow");
-
-	window.threshold = 220;
-
-	if (controller !== null && controllerShadow !== null) {
-		const move = (e: PointerEvent) => {
-			if (e.buttons === 1) {
-				let position = controllerShadow.offsetLeft + e.movementX;
-
-				controllerShadow.style.left = position + "px";
-
-				if (position >= 299) {
-					position = 300;
-				}
-
-				if (position <= 0) {
-					position = 0;
-				}
-
-				controller.style.left = position + "px";
-				window.threshold = position;
-				controller.draggable = false;
-				controller.setPointerCapture(e.pointerId);
-			}
-		};
-
-		controller.addEventListener("pointermove", move);
-
-		controller.addEventListener("pointerup", () => {
-			controllerShadow.style.left = controller.style.left;
-		});
-	}
-</script>
-
-<script>
-	const gainElement = document.querySelector<HTMLDivElement>("#gain");
-	const inputVoiceGain = document.querySelector<HTMLInputElement>("#input-voice-gain");
-
-	const button = document.querySelector<HTMLButtonElement>("#input-voice-button");
-	if (gainElement !== null && inputVoiceGain !== null && button !== null) {
-		button.addEventListener("click", async () => {
-			try {
-				const audioCtx = new AudioContext();
-
-				// マイクから音声を取得する
-				const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-				const source = audioCtx.createMediaStreamSource(stream);
-
-				const analyser = audioCtx.createAnalyser();
-				analyser.fftSize = 256;
-				source.connect(analyser);
-
-				const dataArray = new Uint8Array(analyser.frequencyBinCount);
-
-				// ゲインの表示関数
-				const getDb = () => {
-					// 周波数データを取得
-					analyser.getByteFrequencyData(dataArray);
-
-					const maxLevel = Math.max(...dataArray);
-					const db = (maxLevel / 255) * 100;
-
-					const gain = db * Number(inputVoiceGain.value);
-
-					gainElement.style.backgroundColor = "";
-
-					if (gain >= 100) {
-						gainElement.style.backgroundColor = "#b35757";
-					}
-
-					gainElement.style.width = `${gain}%`;
-
-					const soundImage = document.querySelector<HTMLImageElement>("#sound-image");
-					const silentImage = document.querySelector<HTMLImageElement>("#silent-image");
-
-					if (
-						soundImage !== null &&
-						silentImage !== null &&
-						window.threshold !== undefined &&
-						window.magnification !== undefined
-					) {
-						if ((window.threshold / 300) * 100 < gain) {
-							soundImage.style.display = "none";
-							silentImage.style.display = "block";
-						} else {
-							soundImage.style.display = "block";
-							silentImage.style.display = "none";
-						}
-					}
-
-					// 繰り返し実行
-					requestAnimationFrame(getDb);
-				};
-
-				// ゲイン表示を開始
-				getDb();
-
-				const selectSilentImage = document.querySelector<HTMLButtonElement>("#select-silent-image");
-				const selectSoundImage = document.querySelector<HTMLButtonElement>("#select-sound-image");
-				if (selectSilentImage !== null && selectSoundImage !== null) {
-					selectSilentImage.removeAttribute("data-disabled");
-					selectSoundImage.removeAttribute("data-disabled");
-				}
-			} catch (e) {
-				/* empty */
-			}
-		});
-	}
-</script>
-
-<script>
-	const button = document.querySelector<HTMLButtonElement>("#install-button");
-	const area = document.querySelector<HTMLAreaElement>("#install-app-area");
-
-	const eventCustom = (event: Event) => {
-		event.preventDefault();
-
-		if (button !== null && area !== null) {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-expect-error
-			button.promptEvent = event;
-			area.style.display = "block";
-		}
-	};
-
-	const click = () => {
-		if (
-			button !== null &&
-			button.dataset.disabled === undefined &&
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-expect-error
-			button.promptEvent !== null &&
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-expect-error
-			button.promptEvent !== undefined &&
-			area !== null
-		) {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-expect-error
-			button.promptEvent.prompt();
-
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-expect-error
-			button.promptEvent.userChoice.then(() => {
-				area.style.display = "block";
-
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-expect-error
-				button.promptEvent = null;
+		const inputVoiceGain = document.querySelector<HTMLInputElement>("#input-voice-gain");
+		if (inputVoiceGain !== null) {
+			inputVoiceGain.addEventListener("change", () => {
+				window.magnification = Number(inputVoiceGain.value);
 			});
 		}
 	};
 
-	window.addEventListener("beforeinstallprompt", eventCustom);
-	if (button !== null) {
-		button.addEventListener("click", click);
-	}
+	magnificationControl();
+	document.addEventListener("astro:after-swap", magnificationControl);
+</script>
+
+<script>
+	const selectImage = () => {
+		const selectSilentImage = document.querySelector<HTMLButtonElement>("#select-silent-image");
+		const selectSoundImage = document.querySelector<HTMLButtonElement>("#select-sound-image");
+		const selectSilentImageInput = document.querySelector<HTMLInputElement>("#select-silent-image-input");
+		const selectSoundImageInput = document.querySelector<HTMLInputElement>("#select-sound-image-input");
+		const goViewButton = document.querySelector<HTMLButtonElement>("#go-view-button");
+
+		if (
+			selectSilentImage !== null &&
+			selectSoundImage !== null &&
+			selectSilentImageInput !== null &&
+			selectSoundImageInput !== null &&
+			goViewButton !== null
+		) {
+			selectSilentImage.addEventListener("click", () => {
+				if (selectSilentImage.dataset.disabled === undefined) {
+					selectSilentImageInput.click();
+				}
+			});
+
+			selectSilentImageInput.addEventListener("change", async () => {
+				const files = selectSilentImageInput.files;
+				if (files !== null) {
+					const file = files[0];
+					if (file !== undefined) {
+						const arrayBuffer = await file.arrayBuffer();
+						window.silentImageArrayBuffer = arrayBuffer;
+
+						if (window.silentImageArrayBuffer !== undefined && window.soundImageArrayBuffer !== undefined) {
+							goViewButton.removeAttribute("data-disabled");
+						}
+					}
+				}
+			});
+
+			selectSoundImage.addEventListener("click", () => {
+				if (selectSoundImage.dataset.disabled === undefined) {
+					selectSoundImageInput.click();
+				}
+			});
+
+			selectSoundImageInput.addEventListener("change", async () => {
+				const files = selectSoundImageInput.files;
+
+				if (files !== null) {
+					const file = files[0];
+					if (file !== undefined) {
+						const arrayBuffer = await file.arrayBuffer();
+						window.soundImageArrayBuffer = arrayBuffer;
+
+						if (window.silentImageArrayBuffer !== undefined && window.soundImageArrayBuffer !== undefined) {
+							goViewButton.removeAttribute("data-disabled");
+						}
+					}
+				}
+			});
+		}
+	};
+
+	selectImage();
+	document.addEventListener("astro:after-swap", selectImage);
+</script>
+
+<script>
+	const gainControl = () => {
+		const controller = document.querySelector<HTMLDivElement>("#gain-controller");
+		const controllerShadow = document.querySelector<HTMLDivElement>("#gain-controller-shadow");
+
+		window.threshold = (220 / 300) * 100;
+
+		if (controller !== null && controllerShadow !== null) {
+			const move = (e: PointerEvent) => {
+				if (e.buttons === 1) {
+					let position = controllerShadow.offsetLeft + e.movementX;
+
+					controllerShadow.style.left = position + "px";
+
+					if (position >= 299) {
+						position = 300;
+					}
+
+					if (position <= 0) {
+						position = 0;
+					}
+
+					controller.style.left = position + "px";
+					window.threshold = (position / 300) * 100;
+					controller.draggable = false;
+					controller.setPointerCapture(e.pointerId);
+				}
+			};
+
+			controller.addEventListener("pointermove", move);
+
+			controller.addEventListener("pointerup", () => {
+				controllerShadow.style.left = controller.style.left;
+			});
+		}
+	};
+
+	gainControl();
+	document.addEventListener("astro:after-swap", gainControl);
+</script>
+
+<script>
+	const click = () => {
+		const button = document.querySelector<HTMLButtonElement>("#input-voice-button");
+		if (button !== null) {
+			button.addEventListener("click", async () => {
+				checkAudio();
+			});
+		}
+	};
+
+	click();
+
+	const checkAudio = async () => {
+		const gainElement = document.querySelector<HTMLDivElement>("#gain");
+		const inputVoiceGain = document.querySelector<HTMLInputElement>("#input-voice-gain");
+
+		if (gainElement === null || inputVoiceGain === null) {
+			return;
+		}
+
+		try {
+			const audioCtx = new AudioContext();
+
+			// マイクから音声を取得する
+			const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+			const source = audioCtx.createMediaStreamSource(stream);
+
+			const analyser = audioCtx.createAnalyser();
+			analyser.fftSize = 256;
+			source.connect(analyser);
+
+			const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+			// ゲインの表示関数
+			const getDb = () => {
+				// 周波数データを取得
+				analyser.getByteFrequencyData(dataArray);
+
+				const maxLevel = Math.max(...dataArray);
+				const db = (maxLevel / 255) * 100;
+
+				const gain = db * Number(inputVoiceGain.value);
+
+				gainElement.style.backgroundColor = "";
+
+				if (gain >= 100) {
+					gainElement.style.backgroundColor = "#b35757";
+				}
+
+				gainElement.style.width = `${gain}%`;
+
+				const soundImage = document.querySelector<HTMLImageElement>("#sound-image");
+				const silentImage = document.querySelector<HTMLImageElement>("#silent-image");
+
+				if (
+					soundImage !== null &&
+					silentImage !== null &&
+					window.threshold !== undefined &&
+					window.magnification !== undefined
+				) {
+					if (window.threshold < gain) {
+						soundImage.style.display = "none";
+						silentImage.style.display = "block";
+					} else {
+						soundImage.style.display = "block";
+						silentImage.style.display = "none";
+					}
+				}
+
+				// 繰り返し実行
+				requestAnimationFrame(getDb);
+			};
+
+			// ゲイン表示を開始
+			getDb();
+
+			const selectSilentImage = document.querySelector<HTMLButtonElement>("#select-silent-image");
+			const selectSoundImage = document.querySelector<HTMLButtonElement>("#select-sound-image");
+			const saveButton = document.querySelector<HTMLButtonElement>("#save-button");
+			const loadButton = document.querySelector<HTMLButtonElement>("#load-button");
+			if (selectSilentImage !== null && selectSoundImage !== null) {
+				selectSilentImage.removeAttribute("data-disabled");
+				selectSoundImage.removeAttribute("data-disabled");
+			}
+
+			if (saveButton !== null && !!window.localStorage) {
+				saveButton.removeAttribute("data-disabled");
+			}
+
+			if (loadButton !== null && !!window.localStorage) {
+				const threshold = window.localStorage.getItem("threshold");
+				if (threshold !== null) {
+					loadButton.removeAttribute("data-disabled");
+				}
+			}
+		} catch (e) {
+			/* empty */
+		}
+	};
+
+	document.addEventListener("astro:after-swap", checkAudio);
+</script>
+
+<script>
+	const install = () => {
+		const button = document.querySelector<HTMLButtonElement>("#install-button");
+		const area = document.querySelector<HTMLAreaElement>("#install-app-area");
+
+		const eventCustom = (event: Event) => {
+			event.preventDefault();
+
+			if (button !== null && area !== null) {
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-expect-error
+				button.promptEvent = event;
+				area.style.display = "block";
+			}
+		};
+
+		const click = () => {
+			if (
+				button !== null &&
+				button.dataset.disabled === undefined &&
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-expect-error
+				button.promptEvent !== null &&
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-expect-error
+				button.promptEvent !== undefined &&
+				area !== null
+			) {
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-expect-error
+				button.promptEvent.prompt();
+
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-expect-error
+				button.promptEvent.userChoice.then(() => {
+					area.style.display = "block";
+
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-expect-error
+					button.promptEvent = null;
+				});
+			}
+		};
+
+		window.addEventListener("beforeinstallprompt", eventCustom);
+		if (button !== null) {
+			button.addEventListener("click", click);
+		}
+	};
+
+	install();
+	document.addEventListener("astro:after-swap", install);
+</script>
+
+<script>
+	const save = () => {
+		const saveButton = document.querySelector<HTMLButtonElement>("#save-button");
+		const loadButton = document.querySelector<HTMLButtonElement>("#load-button");
+		if (saveButton !== null) {
+			saveButton.addEventListener("click", () => {
+				if (
+					saveButton.dataset.disabled === undefined &&
+					window.threshold !== undefined &&
+					window.magnification !== undefined
+				) {
+					window.localStorage.setItem("threshold", String(window.threshold));
+					window.localStorage.setItem("magnification", String(window.magnification));
+
+					if (loadButton !== null && !!window.localStorage) {
+						loadButton.removeAttribute("data-disabled");
+					}
+				}
+			});
+		}
+	};
+
+	save();
+	document.addEventListener("astro:after-swap", save);
+</script>
+
+<script>
+	const load = () => {
+		const loadButton = document.querySelector<HTMLButtonElement>("#load-button");
+		const inputVoiceGain = document.querySelector<HTMLInputElement>("#input-voice-gain");
+		const controller = document.querySelector<HTMLDivElement>("#gain-controller");
+		const controllerShadow = document.querySelector<HTMLDivElement>("#gain-controller-shadow");
+
+		if (loadButton !== null && inputVoiceGain !== null && controller !== null && controllerShadow !== null) {
+			loadButton.addEventListener("click", () => {
+				if (loadButton.dataset.disabled === undefined) {
+					const threshold = window.localStorage.getItem("threshold");
+					const magnification = window.localStorage.getItem("magnification");
+
+					if (threshold !== null) {
+						window.threshold = Number(threshold);
+
+						let position = (300 * Number(threshold)) / 100;
+						if (position >= 299) {
+							position = 300;
+						}
+
+						if (position <= 0) {
+							position = 0;
+						}
+						controller.style.left = position + "px";
+						controllerShadow.style.left = position + "px";
+					}
+
+					if (magnification !== null) {
+						window.magnification = Number(magnification);
+						inputVoiceGain.value = magnification;
+					}
+				}
+			});
+		}
+	};
+
+	load();
+	document.addEventListener("astro:after-swap", load);
 </script>
