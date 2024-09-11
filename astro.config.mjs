@@ -1,6 +1,5 @@
 import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
-import react from "@astrojs/react";
 
 const site = "https://simple-v.aki.wtf";
 
@@ -21,8 +20,7 @@ export default defineConfig({
 
 				return true;
 			}
-		}),
-		react()
+		})
 	],
 	build: {
 		format: "file"
