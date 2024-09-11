@@ -46,9 +46,9 @@ import Base from "@/layouts/Base.astro";
 				</p>
 				<Button id="go-view-button" href="/view" disabled>SimpleVTuberを起動</Button>
 			</div>
-			<div>
+			<div id="install-app-area">
 				<p>アプリ化することでOBSなどで取り込んだ際に便利です。</p>
-				<Button id="install-button" disabled>アプリ化する</Button>
+				<Button id="install-button">アプリ化する</Button>
 			</div>
 		</div>
 	</main>
@@ -144,6 +144,10 @@ import Base from "@/layouts/Base.astro";
 
 	#select-silent-image-input,
 	#select-sound-image-input {
+		display: none;
+	}
+
+	#install-app-area {
 		display: none;
 	}
 </style>
@@ -338,15 +342,16 @@ import Base from "@/layouts/Base.astro";
 
 <script>
 	const button = document.querySelector<HTMLButtonElement>("#install-button");
+	const area = document.querySelector<HTMLAreaElement>("#install-app-area");
 
 	const eventCustom = (event: Event) => {
 		event.preventDefault();
 
-		if (button !== null) {
+		if (button !== null && area !== null) {
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-expect-error
 			button.promptEvent = event;
-			button.removeAttribute("data-disabled");
+			area.style.display = "block";
 		}
 	};
 
@@ -359,7 +364,8 @@ import Base from "@/layouts/Base.astro";
 			button.promptEvent !== null &&
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-expect-error
-			button.promptEvent !== undefined
+			button.promptEvent !== undefined &&
+			area !== null
 		) {
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-expect-error
@@ -368,7 +374,7 @@ import Base from "@/layouts/Base.astro";
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-expect-error
 			button.promptEvent.userChoice.then(() => {
-				button.dataset.disabled = "";
+				area.style.display = "block";
 
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-expect-error
