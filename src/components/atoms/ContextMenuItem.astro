@@ -8,11 +8,11 @@ const { href } = Astro.props;
 
 {
 	href === undefined ? (
-		<button class="menu-item" data-button="contextmenu">
+		<button class="menu-item" data-gtm-click="contextmenu">
 			<slot />
 		</button>
 	) : (
-		<a class="menu-item" href={href} data-button="contextmenu">
+		<a class="menu-item" href={href} data-gtm-click="contextmenu">
 			<slot />
 		</a>
 	)

@@ -10,11 +10,11 @@ const { id, href, disabled = false } = Astro.props;
 
 {
 	href === undefined ? (
-		<button id={id} class="button" data-disabled={disabled} data-button="normal">
+		<button id={id} class="button" data-disabled={disabled} data-gtm-click="normal-button">
 			<slot />
 		</button>
 	) : (
-		<a href={href} id={id} class="button" data-disabled={disabled} data-button="normal">
+		<a href={href} id={id} class="button" data-disabled={disabled} data-gtm-click="normal-button">
 			<slot />
 		</a>
 	)
