@@ -8,4 +8,5 @@ interface Window {
 	silentImageArrayBuffer?: ArrayBuffer;
 	soundImageArrayBuffer?: ArrayBuffer;
 	dataLayer?: any;
+	referrer?: string;
 }
