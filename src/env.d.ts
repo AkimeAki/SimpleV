@@ -7,4 +7,5 @@ interface Window {
 	threshold?: number;
 	silentImageArrayBuffer?: ArrayBuffer;
 	soundImageArrayBuffer?: ArrayBuffer;
+	dataLayer?: any;
 }

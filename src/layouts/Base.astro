@@ -134,5 +134,18 @@ const schema = [
 
 			document.addEventListener("astro:after-swap", toggleOnContextMenu);
 		</script>
+
+		<script>
+			const resetGtm = () => {
+				console.log("reset");
+				window.dataLayer.push(function () {
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-expect-error
+					this.reset();
+				});
+			};
+
+			document.addEventListener("astro:after-swap", resetGtm);
+		</script>
 	</body>
 </html>
