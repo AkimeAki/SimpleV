@@ -134,26 +134,5 @@ const schema = [
 
 			document.addEventListener("astro:after-swap", toggleOnContextMenu);
 		</script>
-
-		<script>
-			const resetGtm = (e: Event) => {
-				console.log(e);
-
-				window.dataLayer.push({
-					event: "virtualPageView",
-					page_referrer: window.referrer ?? ""
-				});
-			};
-
-			document.addEventListener("astro:after-swap", resetGtm);
-		</script>
-
-		<script>
-			const getReferrer = () => {
-				window.referrer = location.href;
-			};
-
-			document.addEventListener("astro:before-swap", getReferrer);
-		</script>
 	</body>
 </html>
