@@ -134,5 +134,15 @@ const schema = [
 
 			document.addEventListener("astro:after-swap", toggleOnContextMenu);
 		</script>
+
+		<script>
+			const pageView = () => {
+				window.dataLayer.push({
+					event: "virtualPageView"
+				});
+			};
+
+			document.addEventListener("astro:after-swap", pageView);
+		</script>
 	</body>
 </html>
