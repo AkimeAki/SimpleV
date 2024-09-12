@@ -1,0 +1,38 @@
+---
+import SnsIcon from "@/components/atoms/SnsIcon.astro";
+---
+
+<footer>
+	<span id="copy">Created by <a href="https://aki.wtf/" target="_blank">彩季</a></span>
+	<div class="footer-link">
+		<SnsIcon file="youtube" name="YouTube" href="https://www.youtube.com/channel/UCHV3Taosn76pn9_ip1u7Zkg" />
+		<SnsIcon file="x" name="X" href="https://x.com/Akime_Aki" />
+		<SnsIcon file="github" name="GitHub" href="https://github.com/AkimeAki/SimpleV" />
+	</div>
+</footer>
+
+<style lang="scss">
+	footer {
+		text-align: center;
+		padding: 60px 0;
+		background-color: #5b4942;
+
+		#copy {
+			display: inline-block;
+			font-weight: 300;
+			color: white;
+
+			a {
+				color: rgb(187, 243, 253);
+				font-weight: bold;
+			}
+		}
+
+		.footer-link {
+			display: flex;
+			justify-content: center;
+			padding: 20px 10px;
+			gap: 20px;
+		}
+	}
+</style>

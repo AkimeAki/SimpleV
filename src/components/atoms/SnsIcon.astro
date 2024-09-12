@@ -1,0 +1,29 @@
+---
+interface Props {
+	file: string;
+	name: string;
+	href: string;
+}
+
+const { file, name, href } = Astro.props;
+---
+
+<a class="sns-link" href={href} target="_blank">
+	<img src={`/icon/circle/${file}.png`} alt={`${name}アイコン`} />
+</a>
+
+<style lang="scss">
+	.sns-link {
+		display: block;
+		width: 40px;
+		aspect-ratio: 1/1;
+		font-size: 0;
+		border-radius: 50%;
+		overflow: hidden;
+
+		img {
+			width: 100%;
+			height: 100%;
+		}
+	}
+</style>
