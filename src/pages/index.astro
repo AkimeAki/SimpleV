@@ -216,6 +216,10 @@ import Base from "@/layouts/Base.astro";
 			selectSoundImageInput !== null &&
 			goViewButton !== null
 		) {
+			if (window.silentImageArrayBuffer !== undefined && window.soundImageArrayBuffer !== undefined) {
+				goViewButton.removeAttribute("data-disabled");
+			}
+
 			selectSilentImage.addEventListener("click", () => {
 				if (selectSilentImage.dataset.disabled === undefined) {
 					selectSilentImageInput.click();
