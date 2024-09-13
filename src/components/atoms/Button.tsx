@@ -38,30 +38,20 @@ export default function ({ href, disabled = false, children, onClick }: Props) {
 		`}
 	`;
 
+	const click = () => {
+		if (onClick !== undefined && !disabled) {
+			onClick();
+		}
+	};
+
 	return (
 		<>
 			{href === undefined ? (
-				<button
-					disabled={disabled}
-					css={style}
-					onClick={() => {
-						if (onClick !== undefined && !disabled) {
-							onClick();
-						}
-					}}
-				>
+				<button disabled={disabled} css={style} onClick={click}>
 					{children}
 				</button>
 			) : (
-				<a
-					href={disabled ? href : undefined}
-					css={style}
-					onClick={() => {
-						if (onClick !== undefined && !disabled) {
-							onClick();
-						}
-					}}
-				>
+				<a href={disabled ? href : undefined} css={style} onClick={click}>
 					{children}
 				</a>
 			)}

@@ -28,30 +28,24 @@ export default function ({ href, onClick, children }: Props) {
 		}
 	`;
 
+	const click = () => {
+		if (onClick !== undefined) {
+			onClick();
+		}
+
+		window.dataLayer.push({
+			event: "clickButton"
+		});
+	};
+
 	return (
 		<>
 			{href === undefined ? (
-				<button
-					css={style}
-					data-gtm-click="contextmenu"
-					onClick={() => {
-						if (onClick !== undefined) {
-							onClick();
-						}
-					}}
-				>
+				<button css={style} data-gtm-click="contextmenu" onClick={click}>
 					{children}
 				</button>
 			) : (
-				<a
-					css={style}
-					data-gtm-click="contextmenu"
-					onClick={() => {
-						if (onClick !== undefined) {
-							onClick();
-						}
-					}}
-				>
+				<a css={style} data-gtm-click="contextmenu" onClick={click}>
 					{children}
 				</a>
 			)}
