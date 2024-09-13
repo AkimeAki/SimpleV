@@ -32,10 +32,6 @@ export default function ({ href, onClick, children }: Props) {
 		if (onClick !== undefined) {
 			onClick();
 		}
-
-		window.dataLayer.push({
-			event: "clickButton"
-		});
 	};
 
 	return (
