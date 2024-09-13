@@ -1,5 +1,4 @@
 ---
-import { ViewTransitions } from "astro:transitions";
 import "@/global.scss";
 
 interface Props {
@@ -106,7 +105,6 @@ const schema = [
 		<title>{pageTitle}</title>
 		{!notFound && <link data-pagefind-meta="url[href]" rel="canonical" href={canonical} />}
 		<link rel="manifest" href="/manifest.json" />
-		<ViewTransitions />
 	</head>
 	<body>
 		<!-- Google Tag Manager (noscript) -->
@@ -119,30 +117,5 @@ const schema = [
 		</noscript>
 		<!-- End Google Tag Manager (noscript) -->
 		<slot />
-		<script>
-			const toggleOnContextMenu = () => {
-				const contextMenus = document.querySelectorAll(".context-menu");
-
-				if (contextMenus.length === 0) {
-					document.body.removeAttribute("oncontextmenu");
-				} else {
-					document.body.setAttribute("oncontextmenu", "return false;");
-				}
-			};
-
-			toggleOnContextMenu();
-
-			document.addEventListener("astro:after-swap", toggleOnContextMenu);
-		</script>
-
-		<script>
-			const pageView = () => {
-				window.dataLayer.push({
-					event: "virtualPageView"
-				});
-			};
-
-			document.addEventListener("astro:after-swap", pageView);
-		</script>
 	</body>
 </html>
