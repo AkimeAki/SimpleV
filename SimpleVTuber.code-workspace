@@ -23,8 +23,7 @@
 			"astro-build.astro-vscode",
 			"dbaeumer.vscode-eslint",
 			"esbenp.prettier-vscode",
-			"EditorConfig.EditorConfig",
-			"masterco.master-css-language-service"
+			"EditorConfig.EditorConfig"
 		]
 	}
 }
